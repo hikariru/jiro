@@ -28,8 +28,7 @@ module vm {
             ]
         };
         for (let i = 0; i < jiroList.jiro.length; i++) {
-            console.log(`${i}: ${jiroList.jiro[i]}`);
-            vm.list[i] = new Jiro(jiroList.jiro[i])
+            vm.list().push(new Jiro(jiroList.jiro[i]))
         }
     }
 }
@@ -38,9 +37,9 @@ let jiroApp = {
     controller: function() {
         vm.init();
     },
-    view: function(controller) {
+    view: function() {
         return m('ul', vm.list().map(function (jiro: Jiro) {
-            return m("li", jiro.name)
+            return m("li", jiro.name());
         }));
     }
 };

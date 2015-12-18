@@ -19,8 +19,7 @@ var vm;
             ]
         };
         for (var i = 0; i < jiroList.jiro.length; i++) {
-            console.log(i + ": " + jiroList.jiro[i]);
-            vm.list[i] = new Jiro(jiroList.jiro[i]);
+            vm.list().push(new Jiro(jiroList.jiro[i]));
         }
     }
     vm.init = init;
@@ -29,9 +28,9 @@ var jiroApp = {
     controller: function () {
         vm.init();
     },
-    view: function (controller) {
+    view: function () {
         return m('ul', vm.list().map(function (jiro) {
-            return m("li", jiro.name);
+            return m("li", jiro.name());
         }));
     }
 };
