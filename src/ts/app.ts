@@ -7,9 +7,9 @@ class Jiro {
     closed: _mithril.MithrilProperty<string[]>;
 
     constructor(data: any) {
-        this.name = m.prop(data["name"]);
-        //this.business = m.prop(data.business);
-        //this.closed = m.prop(data.closed);
+        this.name = m.prop(data.name);
+        this.business = m.prop(data.business);
+        this.closed = m.prop(data.closed);
     }
 }
 
@@ -17,19 +17,18 @@ module vm {
     export var list: _mithril.MithrilProperty<Jiro[]>;
     export function init() {
         vm.list = m.prop([]);
-        let jiroList = {
-            "jiro": [
-                {
-                    "name": "三田本店",
-                    "location": "〒108-0073 東京都港区三田2-16-3",
-                    "business": ["8:30～15:00", "17:00～20:00"],
-                    "closed": ["日曜", "祝日"]
-                }
-            ]
-        };
-        for (let i = 0; i < jiroList.jiro.length; i++) {
-            vm.list().push(new Jiro(jiroList.jiro[i]))
-        }
+        m.request({
+            method: 'GET',
+            background: true,
+            url: 'client/json/jiro.json',
+            initialValue: [],
+        }).then(function (data: any[]) {
+            m.startComputation();
+            data.forEach(function(value) {
+               vm.list().push(new Jiro(value));
+            });
+            m.endComputation();
+        });
     }
 }
 
@@ -38,8 +37,12 @@ let jiroApp = {
         vm.init();
     },
     view: function() {
-        return m('ul', vm.list().map(function (jiro: Jiro) {
-            return m("li", jiro.name());
+        return m('dl', vm.list().map(function (jiro: Jiro) {
+            return [
+                m('dt', jiro.name()),
+                m('dd', `開店時間: ${jiro.business().join(', ')}`),
+                m('dd', `休業日: ${jiro.closed().join(', ')}`)
+            ];
         }));
     }
 };

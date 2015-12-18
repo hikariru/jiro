@@ -1,6 +1,8 @@
 var Jiro = (function () {
     function Jiro(data) {
-        this.name = m.prop(data["name"]);
+        this.name = m.prop(data.name);
+        this.business = m.prop(data.business);
+        this.closed = m.prop(data.closed);
     }
     return Jiro;
 })();
@@ -8,19 +10,18 @@ var vm;
 (function (vm) {
     function init() {
         vm.list = m.prop([]);
-        var jiroList = {
-            "jiro": [
-                {
-                    "name": "三田本店",
-                    "location": "〒108-0073 東京都港区三田2-16-3",
-                    "business": ["8:30～15:00", "17:00～20:00"],
-                    "closed": ["日曜", "祝日"]
-                }
-            ]
-        };
-        for (var i = 0; i < jiroList.jiro.length; i++) {
-            vm.list().push(new Jiro(jiroList.jiro[i]));
-        }
+        m.request({
+            method: 'GET',
+            background: true,
+            url: 'client/json/jiro.json',
+            initialValue: [],
+        }).then(function (data) {
+            m.startComputation();
+            data.forEach(function (value) {
+                vm.list().push(new Jiro(value));
+            });
+            m.endComputation();
+        });
     }
     vm.init = init;
 })(vm || (vm = {}));
@@ -29,8 +30,12 @@ var jiroApp = {
         vm.init();
     },
     view: function () {
-        return m('ul', vm.list().map(function (jiro) {
-            return m("li", jiro.name());
+        return m('dl', vm.list().map(function (jiro) {
+            return [
+                m('dt', jiro.name()),
+                m('dd', "\u958B\u5E97\u6642\u9593: " + jiro.business().join(', ')),
+                m('dd', "\u4F11\u696D\u65E5: " + jiro.closed().join(', '))
+            ];
         }));
     }
 };

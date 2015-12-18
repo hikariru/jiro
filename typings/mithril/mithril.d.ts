@@ -161,6 +161,7 @@ declare module _mithril {
 		type?(data: Object): void;
 		config?(xhr: XMLHttpRequest, options: MithrilXHROptions): XMLHttpRequest;
 		dataType?: string;
+		initialValue?: any;
 	}
 }
 
