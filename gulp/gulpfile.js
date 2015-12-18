@@ -20,4 +20,4 @@ gulp.task('watch', function(){
     gulp.watch('../src/ts/**/*.ts', ['ts-compile']);
 });
 
-gulp.task('default', ['watch']);
+gulp.task('default', ['ts-compile', 'watch']);
