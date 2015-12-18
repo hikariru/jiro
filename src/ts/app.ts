@@ -8,6 +8,7 @@ class Jiro {
 
     constructor(data: any) {
         this.name = m.prop(data.name);
+        this.location = m.prop(data.location);
         this.business = m.prop(data.business);
         this.closed = m.prop(data.closed);
     }
@@ -40,6 +41,10 @@ let jiroApp = {
         return m('dl', vm.list().map(function (jiro: Jiro) {
             return [
                 m('dt', jiro.name()),
+                m('dd', [
+                    '場所: ',
+                    m(`a[href='http://maps.google.co.jp/maps?hl=ja&ie=UTF8&q=${jiro.location()}']`, jiro.location())
+                ]),
                 m('dd', `開店時間: ${jiro.business().join(', ')}`),
                 m('dd', `休業日: ${jiro.closed().join(', ')}`)
             ];

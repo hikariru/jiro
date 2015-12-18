@@ -1,6 +1,7 @@
 var Jiro = (function () {
     function Jiro(data) {
         this.name = m.prop(data.name);
+        this.location = m.prop(data.location);
         this.business = m.prop(data.business);
         this.closed = m.prop(data.closed);
     }
@@ -33,6 +34,10 @@ var jiroApp = {
         return m('dl', vm.list().map(function (jiro) {
             return [
                 m('dt', jiro.name()),
+                m('dd', [
+                    '場所: ',
+                    m("a[href='http://maps.google.co.jp/maps?hl=ja&ie=UTF8&q=" + jiro.location() + "']", jiro.location())
+                ]),
                 m('dd', "\u958B\u5E97\u6642\u9593: " + jiro.business().join(', ')),
                 m('dd', "\u4F11\u696D\u65E5: " + jiro.closed().join(', '))
             ];
