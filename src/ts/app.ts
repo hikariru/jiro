@@ -1,4 +1,4 @@
-/// <reference path="../../typings/mithril/mithril.d.ts" />
+/// <reference path="../../typings/tsd.d.ts" />
 
 class Jiro {
     name: _mithril.MithrilProperty<string>;
@@ -14,10 +14,26 @@ class Jiro {
     }
 }
 
+class Filter {
+    open: _mithril.MithrilProperty<boolean>;
+    value: _mithril.MithrilProperty<string>;
+
+    constructor() {
+        this.open = m.prop(false);
+        this.value = m.prop("");
+    }
+}
+
 module vm {
-    export var list: _mithril.MithrilProperty<Jiro[]>;
+    import Dictionary = _.Dictionary;
+    import List = _.List;
+    export let list: _mithril.MithrilProperty<Jiro[]>;
+    export var listForDisplay: _mithril.MithrilProperty<Jiro[]>;
+    export var filter: _mithril.MithrilProperty<Filter>;
     export function init() {
-        vm.list = m.prop([]);
+        let list = [];
+        vm.listForDisplay = m.prop([]);
+        vm.filter = m.prop(new Filter());
         m.request({
             method: 'GET',
             background: true,
@@ -26,10 +42,23 @@ module vm {
         }).then(function (data: any[]) {
             m.startComputation();
             data.forEach(function(value) {
-               vm.list().push(new Jiro(value));
+               list.push(new Jiro(value))
             });
+            vm.listForDisplay = m.prop(_.map(list, _.clone));
             m.endComputation();
         });
+    }
+    export function search() {
+        //let originalList = <List><any> vm.list();
+        //filteredList = _.filter(originalList, function() {
+        //    !_.contains(this.closed(), "日曜");
+        //});
+        //
+        //m.startComputation();
+        //_.each(filteredList, function() {
+        //    vm.listForDisplay().push(new Jiro(this));
+        //});
+        //m.endComputation();
     }
 }
 
@@ -38,7 +67,14 @@ let jiroApp = {
         vm.init();
     },
     view: function() {
-        return m('dl', vm.list().map(function (jiro: Jiro) {
+        return m('div', [
+            m('div', [
+                m('label', [
+                    '今日営業している店舗',
+                    m('input[type=checkbox]', {onclick: m.withAttr('checked', vm.search), checked: vm.filter().open()})
+                ])
+            ]),
+            m('dl', vm.listForDisplay().map(function (jiro: Jiro) {
             return [
                 m('dt', jiro.name()),
                 m('dd', [
@@ -48,7 +84,8 @@ let jiroApp = {
                 m('dd', `開店時間: ${jiro.business().join(', ')}`),
                 m('dd', `休業日: ${jiro.closed().join(', ')}`)
             ];
-        }));
+            })
+        )]);
     }
 };
 
