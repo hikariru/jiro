@@ -25,7 +25,6 @@ class Filter {
 }
 
 module vm {
-    import Dictionary = _.Dictionary;
     import List = _.List;
     export let list: _mithril.MithrilProperty<Jiro[]>;
     export var listForDisplay: _mithril.MithrilProperty<Jiro[]>;
