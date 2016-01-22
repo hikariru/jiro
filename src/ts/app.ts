@@ -32,6 +32,7 @@ module vm {
     export var filter: _mithril.MithrilProperty<Filter>;
     export function init() {
         let list = [];
+        vm.list = m.prop([]);
         vm.listForDisplay = m.prop([]);
         vm.filter = m.prop(new Filter());
         m.request({
@@ -44,21 +45,26 @@ module vm {
             data.forEach(function(value) {
                list.push(new Jiro(value))
             });
-            vm.listForDisplay = m.prop(_.map(list, _.clone));
+            vm.list = m.prop(_.map(list, _.clone));
+            vm.listForDisplay = vm.list;
             m.endComputation();
         });
     }
     export function search() {
-        //let originalList = <List><any> vm.list();
-        //filteredList = _.filter(originalList, function() {
-        //    !_.contains(this.closed(), "日曜");
-        //});
-        //
-        //m.startComputation();
-        //_.each(filteredList, function() {
-        //    vm.listForDisplay().push(new Jiro(this));
-        //});
-        //m.endComputation();
+        let originalList : List<Jiro>;
+        originalList = vm.list();
+
+        var filteredList : List<Jiro>;
+        filteredList=_.filter(originalList, function(item: Jiro) {
+            return !_.contains(item.closed(), "日曜");
+        });
+
+        m.startComputation();
+        vm.listForDisplay = m.prop([]);
+        _.each(filteredList, function(item: Jiro) {
+            vm.listForDisplay().push(item);
+        });
+        m.endComputation();
     }
 }
 

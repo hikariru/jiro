@@ -18,6 +18,7 @@ var vm;
 (function (vm) {
     function init() {
         var list = [];
+        vm.list = m.prop([]);
         vm.listForDisplay = m.prop([]);
         vm.filter = m.prop(new Filter());
         m.request({
@@ -30,12 +31,25 @@ var vm;
             data.forEach(function (value) {
                 list.push(new Jiro(value));
             });
-            vm.listForDisplay = m.prop(_.map(list, _.clone));
+            vm.list = m.prop(_.map(list, _.clone));
+            vm.listForDisplay = vm.list;
             m.endComputation();
         });
     }
     vm.init = init;
     function search() {
+        var originalList;
+        originalList = vm.list();
+        var filteredList;
+        filteredList = _.filter(originalList, function (item) {
+            return !_.contains(item.closed(), "日曜");
+        });
+        m.startComputation();
+        vm.listForDisplay = m.prop([]);
+        _.each(filteredList, function (item) {
+            vm.listForDisplay().push(item);
+        });
+        m.endComputation();
     }
     vm.search = search;
 })(vm || (vm = {}));
