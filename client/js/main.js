@@ -37,7 +37,11 @@ var vm;
         });
     }
     vm.init = init;
-    function search() {
+    function search(open) {
+        if (!open) {
+            vm.listForDisplay = m.prop(vm.list());
+            return;
+        }
         var originalList;
         originalList = vm.list();
         var filteredList;
@@ -58,13 +62,19 @@ var jiroApp = {
         vm.init();
     },
     view: function () {
-        return m('div', [
-            m('div', [
-                m('label', [
-                    '今日営業している店舗',
-                    m('input[type=checkbox]', { onclick: m.withAttr('checked', vm.search), checked: vm.filter().open() })
-                ])
-            ]),
+        var openedCheckbox = m('div', [
+            m('label', [
+                '今日営業している店舗: ',
+                m('input[type=checkbox]', { onclick: m.withAttr('checked', vm.search.bind(vm.filter().open())), value: vm.filter().open(), checked: vm.filter().open() })
+            ])
+        ]);
+        var searchBox = m('div', [
+            m('label', [
+                '検索: ',
+                m('input[type=text')
+            ])
+        ]);
+        var jiroList = m('div', [
             m('dl', vm.listForDisplay().map(function (jiro) {
                 return [
                     m('dt', jiro.name()),
@@ -76,6 +86,7 @@ var jiroApp = {
                     m('dd', "\u4F11\u696D\u65E5: " + jiro.closed().join(', '))
                 ];
             }))]);
+        return [openedCheckbox, searchBox, jiroList];
     }
 };
 m.mount(document.getElementById('root'), jiroApp);

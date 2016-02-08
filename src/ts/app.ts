@@ -49,7 +49,12 @@ module vm {
             m.endComputation();
         });
     }
-    export function search() {
+    export function search(open) {
+        if (!open) {
+            vm.listForDisplay = m.prop(vm.list());
+            return
+        }
+
         let originalList : List<Jiro>;
         originalList = vm.list();
 
@@ -72,25 +77,35 @@ let jiroApp = {
         vm.init();
     },
     view: function() {
-        return m('div', [
-            m('div', [
+        let openedCheckbox = m('div', [
                 m('label', [
-                    '今日営業している店舗',
-                    m('input[type=checkbox]', {onclick: m.withAttr('checked', vm.search), checked: vm.filter().open()})
+                    '今日営業している店舗: ',
+                    m('input[type=checkbox]', {onclick: m.withAttr('checked', vm.search.bind(vm.filter().open())), value: vm.filter().open(), checked: vm.filter().open()})
                 ])
-            ]),
+            ]);
+
+        let searchBox = m('div', [
+           m('label', [
+               '検索: ',
+               m('input[type=text')
+           ])
+        ]);
+
+        let jiroList = m('div', [
             m('dl', vm.listForDisplay().map(function (jiro: Jiro) {
-            return [
-                m('dt', jiro.name()),
-                m('dd', [
-                    '場所: ',
-                    m(`a[href='http://maps.google.co.jp/maps?hl=ja&ie=UTF8&q=${jiro.location()}']`, jiro.location())
-                ]),
-                m('dd', `開店時間: ${jiro.business().join(', ')}`),
-                m('dd', `休業日: ${jiro.closed().join(', ')}`)
-            ];
-            })
-        )]);
+                    return [
+                        m('dt', jiro.name()),
+                        m('dd', [
+                            '場所: ',
+                            m(`a[href='http://maps.google.co.jp/maps?hl=ja&ie=UTF8&q=${jiro.location()}']`, jiro.location())
+                        ]),
+                        m('dd', `開店時間: ${jiro.business().join(', ')}`),
+                        m('dd', `休業日: ${jiro.closed().join(', ')}`)
+                    ];
+                })
+            )]);
+
+        return [openedCheckbox, searchBox, jiroList]
     }
 };
 
