@@ -1,2 +1,2 @@
 # jiro
-何かやる
+mithril素振り会場
